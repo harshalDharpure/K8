@@ -1,0 +1,154 @@
+Kubernetes Basics & Hands-On Guide
+1. What is Kubernetes?
+
+Kubernetes is an open-source container orchestration platform that automates:
+
+Deploying containers
+
+Scaling containers up/down
+
+Managing container health and updates
+
+Key Concepts:
+
+Concept	Description
+Cluster	Group of nodes running Kubernetes
+Node	A single machine (VM or physical) in the cluster
+Pod	Smallest deployable unit in Kubernetes; usually contains 1 container
+Deployment	Manages pods; ensures desired number of pods are running
+Service	Exposes pods to internal or external network
+ReplicaSet	Ensures a specified number of pod replicas are running
+2. Kubernetes Setup (Hands-On)
+
+In this guide, we assume a pre-existing Kubernetes cluster (control plane + worker node).
+
+Check nodes:
+
+kubectl get nodes -o wide
+
+
+Example output:
+
+NAME           STATUS   ROLES           AGE     VERSION   INTERNAL-IP
+controlplane   Ready    control-plane   4d21h   v1.33.2   172.30.1.2
+node01         Ready    <none>          4d21h   v1.33.2   172.30.1.3
+
+3. Create a Pod
+
+A Pod is the smallest unit in Kubernetes:
+
+kubectl run my-first-pod --image=nginx --restart=Never
+
+
+Check pods:
+
+kubectl get pods
+
+
+Get details:
+
+kubectl describe pod my-first-pod
+
+
+View logs:
+
+kubectl logs my-first-pod
+
+4. Create a Deployment
+
+Deployments manage pods and ensure availability:
+
+kubectl create deployment my-first-deployment --image=nginx
+
+
+Check deployment:
+
+kubectl get deployments
+kubectl get pods
+
+
+Scale deployment:
+
+kubectl scale deployment my-first-deployment --replicas=3
+kubectl get pods
+
+5. Expose Deployment (Service)
+
+To access pods, create a service:
+
+kubectl expose deployment my-first-deployment --type=NodePort --port=80
+
+
+Check service:
+
+kubectl get services
+
+
+Example output:
+
+NAME                  TYPE        CLUSTER-IP      PORT(S)        AGE
+my-first-deployment   NodePort    10.96.117.76   80:30153/TCP   19s
+
+
+Access Service using Port Forwarding:
+
+kubectl port-forward deployment/my-first-deployment 8080:80
+
+
+Open browser:
+
+http://localhost:8080
+
+6. Inspecting Pods
+
+View logs of a pod:
+
+kubectl logs <pod-name>
+
+
+Exec into a pod shell:
+
+kubectl exec -it <pod-name> -- /bin/bash
+
+
+Explore container file system, e.g., /usr/share/nginx/html for Nginx.
+
+7. Update Deployment
+
+Change the image of the deployment:
+
+kubectl set image deployment/my-first-deployment nginx=nginx:alpine
+kubectl rollout status deployment/my-first-deployment
+
+8. Clean Up
+kubectl delete service my-first-deployment
+kubectl delete deployment my-first-deployment
+kubectl delete pod my-first-pod
+
+9. Summary of Hands-On Practice
+
+Checked cluster nodes
+
+Created a Pod
+
+Created a Deployment with multiple replicas
+
+Exposed deployment using NodePort service
+
+Scaled deployment
+
+Viewed pod logs and shell
+
+Updated deployment image
+
+Cleaned up resources
+
+✅ Next Steps for Practice
+
+Deploy a simple web app (Python Flask, Node.js, or Nginx custom page)
+
+Practice rolling updates using deployments
+
+Learn ConfigMaps and Secrets for managing configuration
+
+Explore Ingress controllers for real-world traffic routing
