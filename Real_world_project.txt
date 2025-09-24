@@ -1,0 +1,127 @@
+Kubernetes Crash Demo – Self-Healing in Action
+Overview
+
+This practical demonstrates Kubernetes self-healing:
+
+Deploy a deployment with multiple pods
+
+Simulate a pod failure
+
+Observe how Kubernetes maintains the desired number of pods automatically
+
+This is useful to understand one of Kubernetes’ core features: self-healing and high availability.
+
+Cluster Setup
+
+We assume an existing Kubernetes cluster with kubectl access.
+
+Check nodes:
+
+kubectl get nodes -o wide
+
+
+Example output:
+
+NAME           STATUS   ROLES           AGE     VERSION   INTERNAL-IP
+controlplane   Ready    control-plane   4d21h   v1.33.2   172.30.1.2
+node01         Ready    <none>          4d21h   v1.33.2   172.30.1.3
+
+Step 1: Create a Deployment
+
+Create a deployment with 3 replicas using Nginx:
+
+kubectl create deployment crash-demo --image=nginx --replicas=3
+
+
+Check pods:
+
+kubectl get pods
+
+
+Example output:
+
+NAME                        READY   STATUS    RESTARTS   AGE
+crash-demo-855f8b45dd-fz8ng   1/1   Running   0          15s
+crash-demo-855f8b45dd-p68w5   1/1   Running   0          15s
+crash-demo-855f8b45dd-sfjsx   1/1   Running   0          15s
+
+Step 2: Force a Pod to Fail
+
+Delete one pod manually:
+
+kubectl delete pod crash-demo-855f8b45dd-sfjsx
+
+
+Kubernetes automatically creates a new pod to maintain 3 replicas.
+
+Watch pods:
+
+kubectl get pods -w
+
+Step 3: Simulate a Failing Pod
+
+Create a pod with a non-existent image:
+
+kubectl run crash-pod --image=busybox:wrongtag --restart=Never -- sleep 3600
+
+
+Check pod status:
+
+kubectl get pods -w
+
+
+Pod status: ErrImagePull → ImagePullBackOff
+
+Deployment pods remain healthy and running
+
+Step 4: Observe Deployment Status
+kubectl get deployments
+kubectl describe deployment crash-demo
+
+
+Desired replicas = 3
+
+Current running = 3
+
+Failed pod does not reduce replica count, showing self-healing
+
+Step 5: Cleanup
+kubectl delete pod crash-pod
+kubectl delete deployment crash-demo
+
+
+Frees up cluster resources
+
+Key Concepts Learned
+
+Pods: smallest deployable units in Kubernetes
+
+Deployments: manage pod replicas and health
+
+Self-Healing: Kubernetes automatically replaces failed pods
+
+Pod Statuses: Running, CrashLoopBackOff, ImagePullBackOff
+
+Scaling: Kubernetes ensures desired replicas are always maintained
+
+Practical Tips
+
+Always monitor deployments:
+
+kubectl get pods
+kubectl get deployments
+
+
+Use kubectl describe pod <pod-name> to debug pod failures
+
+Use kubectl logs <pod-name> to view container logs
+
+✅ Outcome
+
+You now have a hands-on demonstration of Kubernetes self-healing. Even if one pod fails:
+
+The deployment remains healthy
+
+Kubernetes automatically replaces failing pods
+
+This is a core reason why Kubernetes is used for high-availability applications.
