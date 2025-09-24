@@ -1,0 +1,149 @@
+==========================
+KUBERNETES BASICS & PRACTICAL NOTES
+==========================
+
+1. WHAT IS KUBERNETES?
+----------------------
+Kubernetes is an open-source container orchestration platform that automates:
+- Deploying containers
+- Scaling containers
+- Managing container health and updates
+
+Key Concepts:
+- Cluster: Group of nodes running Kubernetes
+- Node: Single machine (VM or physical) in the cluster
+- Pod: Smallest deployable unit, usually contains 1 container
+- Deployment: Manages pods; ensures desired number of pods are running
+- Service: Exposes pods to internal or external network
+- ReplicaSet: Ensures a specified number of pod replicas are running
+
+--------------------------
+2. CLUSTER SETUP
+--------------------------
+Assume an existing cluster with kubectl access.
+
+Check nodes:
+kubectl get nodes -o wide
+
+Example Output:
+NAME           STATUS   ROLES           AGE     VERSION   INTERNAL-IP
+controlplane   Ready    control-plane   4d21h   v1.33.2   172.30.1.2
+node01         Ready    <none>          4d21h   1.33.2    172.30.1.3
+
+--------------------------
+3. CREATE A POD
+--------------------------
+kubectl run my-first-pod --image=nginx --restart=Never
+kubectl get pods
+kubectl describe pod my-first-pod
+kubectl logs my-first-pod
+
+--------------------------
+4. CREATE A DEPLOYMENT
+--------------------------
+kubectl create deployment my-first-deployment --image=nginx
+kubectl get deployments
+kubectl get pods
+kubectl scale deployment my-first-deployment --replicas=3
+kubectl set image deployment/my-first-deployment nginx=nginx:alpine
+kubectl delete deployment my-first-deployment
+
+--------------------------
+5. EXPOSE DEPLOYMENT (SERVICE)
+--------------------------
+kubectl expose deployment my-first-deployment --type=NodePort --port=80
+kubectl get services
+kubectl describe service my-first-deployment
+
+Port Forwarding:
+kubectl port-forward deployment/my-first-deployment 8080:80
+Access: http://localhost:8080
+
+--------------------------
+6. OBSERVE PODS
+--------------------------
+kubectl logs <pod-name>
+kubectl exec -it <pod-name> -- /bin/bash
+
+--------------------------
+7. CLEAN UP
+--------------------------
+kubectl delete pod my-first-pod
+kubectl delete service my-first-deployment
+kubectl delete deployment my-first-deployment
+
+--------------------------
+8. CRASH DEMO – SELF-HEALING
+--------------------------
+Create deployment:
+kubectl create deployment crash-demo --image=nginx --replicas=3
+kubectl get pods
+
+Force pod failure:
+kubectl delete pod crash-demo-<pod-name>
+
+Simulate failing pod:
+kubectl run crash-pod --image=busybox:wrongtag --restart=Never -- sleep 3600
+kubectl get pods -w
+kubectl describe pod crash-pod
+kubectl logs crash-pod
+
+Observe deployment:
+kubectl get deployments
+kubectl describe deployment crash-demo
+
+Clean up:
+kubectl delete pod crash-pod
+kubectl delete deployment crash-demo
+
+--------------------------
+9. KUBERNETES COMMAND CHEAT SHEET
+--------------------------
+# Cluster & Nodes
+kubectl get nodes
+kubectl get nodes -o wide
+
+# Pods
+kubectl get pods
+kubectl describe pod <pod>
+kubectl logs <pod>
+kubectl exec -it <pod> -- /bin/bash
+kubectl delete pod <pod>
+
+# Deployments
+kubectl create deployment <name> --image=<image> --replicas=<n>
+kubectl get deployments
+kubectl scale deployment <name> --replicas=<n>
+kubectl set image deployment/<name> <container>=<image>
+kubectl delete deployment <name>
+
+# Services
+kubectl expose deployment <name> --type=NodePort --port=<port>
+kubectl get services
+kubectl delete service <name>
+
+# Port Forwarding
+kubectl port-forward deployment/<name> <local-port>:<pod-port>
+
+# Watch Resources
+kubectl get pods -w
+kubectl get deployments -w
+
+# Debugging
+kubectl describe pod <pod>
+kubectl get events
+kubectl get all
+
+--------------------------
+10. KEY TAKEAWAYS
+--------------------------
+- Pods are smallest deployable units
+- Deployments manage pod replicas and health
+- Services expose pods to the network
+- Kubernetes automatically replaces failed pods (self-healing)
+- Scaling and rolling updates are easy
+- Port-forwarding is useful for local testing without external IP
+
+--------------------------
+End of File
+==========================
