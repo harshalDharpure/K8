@@ -1,0 +1,42 @@
+==========================
+KUBERNETES PRACTICAL DOCUMENTATION
+==========================
+
+1. WHAT IS KUBERNETES?
+----------------------
+Kubernetes is an open-source container orchestration platform. It automates:
+- Container deployment
+- Scaling
+- Self-healing of applications
+
+Key Concepts:
+- Cluster: Group of nodes running Kubernetes
+- Node: Single machine in the cluster
+- Pod: Smallest deployable unit; usually contains one container
+- Deployment: Manages pods; ensures desired number of replicas
+- Service: Exposes pods internally or externally
+- ReplicaSet: Ensures a specified number of pod replicas are running
+
+--------------------------
+2. INSTALLATION (MINIKUBE)
+--------------------------
+# Update package index
+sudo apt update
+
+# Install dependencies
+sudo apt install -y curl apt-transport-https virtualbox virtualbox-ext-pack
+
+# Install Minikube
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+sudo dpkg -i minikube_latest_amd64.deb
+
+# Start Minikube
+minikube start --driver=docker
+# Note: Requires at least 2 CPUs
+
+# Check Minikube status
+minikube status
+
+# kubectl (if not installed)
+sudo apt install -y kubectl
+kubectl version --client
