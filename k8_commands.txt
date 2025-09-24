@@ -1,0 +1,45 @@
+Kubernetes Commands Reference
+Cluster & Nodes
+kubectl get nodes                 # List all nodes
+kubectl get nodes -o wide         # List nodes with detailed info
+kubectl describe node <node-name> # Detailed node info
+
+Pods
+kubectl get pods                  # List all pods
+kubectl get pods -o wide          # Detailed pod info
+kubectl describe pod <pod-name>   # Details of a specific pod
+kubectl logs <pod-name>           # View logs of a pod
+kubectl exec -it <pod-name> -- /bin/bash  # Enter pod shell
+kubectl delete pod <pod-name>     # Delete a pod
+
+Deployments
+kubectl create deployment <name> --image=<image> --replicas=<n>  # Create deployment
+kubectl get deployments                                        # List deployments
+kubectl describe deployment <deployment-name>                  # Detailed deployment info
+kubectl scale deployment <deployment-name> --replicas=<n>      # Scale deployment
+kubectl set image deployment/<deployment-name> <container>=<image>  # Update image
+kubectl delete deployment <deployment-name>                    # Delete deployment
+
+Services
+kubectl expose deployment <deployment-name> --type=NodePort --port=<port>  # Expose deployment
+kubectl get services               # List all services
+kubectl describe service <service-name>  # Details of a service
+kubectl delete service <service-name>    # Delete a service
+
+Port Forwarding
+kubectl port-forward deployment/<deployment-name> <local-port>:<pod-port>
+# Example: kubectl port-forward deployment/my-first-deployment 8080:80
+
+Watch Resources
+kubectl get pods -w            # Watch pods continuously
+kubectl get deployments -w     # Watch deployments continuously
+kubectl get services -w        # Watch services continuously
+
+Debugging
+kubectl describe pod <pod-name>      # Debug pod issues
+kubectl logs <pod-name>              # View container logs
+kubectl get events                   # View recent cluster events
+kubectl get all                      # List all resources in current namespace
+
+
+✅ These commands cover pods, deployments, services, scaling, debugging, and port-forwarding — everything you need for hands-on Kubernetes practice.
